@@ -27,6 +27,7 @@ class VOCDataset(torch.utils.data.Dataset):
         # Handel the .csv & image files
         label_path = os.path.join(self.label_dir, self.annotations.iloc[idx, 1])
         boxes = []
+        # split the .csv file with "|"
         with open(label_path, 'r') as f:
             for label in f.readlines():
                 class_label, x, y, width, height = [
