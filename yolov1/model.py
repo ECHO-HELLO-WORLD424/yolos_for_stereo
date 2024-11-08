@@ -65,7 +65,6 @@ class Yolov1(nn.Module):
 
         self.fcs = self._create_fcs(**kwargs)
 
-
     def forward(self, x):
         x = self.darknet(x)
         return self.fcs(torch.flatten(x, start_dim=1))
