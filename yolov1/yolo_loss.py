@@ -1,7 +1,7 @@
 
 import torch
 import torch.nn as nn
-from utils import intersection_over_union
+from yolo_utils import intersection_over_union
 
 
 

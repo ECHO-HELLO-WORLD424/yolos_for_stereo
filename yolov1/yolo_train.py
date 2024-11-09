@@ -4,10 +4,10 @@ import torchvision.transforms as transforms
 import torch.optim as optim
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from model import Yolov1
-from utils import *
-from loss import YoloLoss
-from yolos_for_stereo.yolov1.dataset import VOCDataset
+from yolo_model import Yolov1
+from yolo_utils import *
+from yolo_loss import YoloLoss
+from yolos_for_stereo.yolov1.yolo_dataset import VOCDataset
 
 seed = 192
 torch.manual_seed(seed)
