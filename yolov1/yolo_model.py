@@ -4,8 +4,8 @@ import torch.nn as nn
 
 
 
-'''Basic structure of yolo'''
-architecture_config = [
+'''Basic structure of convolutional layers'''
+conv_config = [
     # Kernel tuple (kernel_size, num_filters, stride, padding)
     (7, 64, 3, 2),
     # A 2D MaxPool will be added
@@ -28,8 +28,18 @@ architecture_config = [
     (3, 1024, 2, 1),
     (3, 1024, 1, 1),
     (3, 1024, 1, 1),
+    "AdMaxPool"
 ]
 
+'''TODO: HOW TO MAKE THIS WORK'''
+'''Basic structure of full-connection  layers'''
+fc_config = [
+    ('flatten', 0.0),
+    ('linear', 0),
+    ('dropout', 0.0),
+    ('leaky_relu', 0.0),
+
+]
 
 def test(split_size, num_boxes, num_classes):
     model = Yolov1(split_size=split_size,
@@ -46,6 +56,7 @@ class CNNBlock(nn.Module):
         self.batchnorm1 = nn.BatchNorm2d(out_channels)
         self.leakyrelu = nn.LeakyReLU(negative_slope=0.1)
 
+
     def forward(self, x):
         return self.leakyrelu(self.batchnorm1(self.conv1(x)))
 
@@ -53,9 +64,9 @@ class CNNBlock(nn.Module):
 class Yolov1(nn.Module):
     def __init__(self, in_channels=3, **kwargs):
         super(Yolov1, self).__init__()
-        self.architecture_config = architecture_config
+        self.architecture_config = conv_config
         self.in_channels = in_channels
-        self.darknet = self._create_conv_layer(self.architecture_config)
+        self.darknet = self._create_conv_layer(self.conv_config)
 
         # Calculate the feature dimension
         x = torch.randn((1, in_channels, 488, 488))
@@ -84,9 +95,14 @@ class Yolov1(nn.Module):
                     ]
                 in_channels = x[1]
             elif type(x) is str:
-                layers += [
-                    nn.MaxPool2d(kernel_size=2, stride=2)
-                ]
+                if x == "MaxPool":
+                    layers += [
+                        nn.MaxPool2d(kernel_size=2, stride=2)
+                    ]
+                if x == "AdMaxPool":
+                    layers += [
+                        nn.AdaptiveAvgPool2d(kernel_size=1, stride=1)
+                    ]
             elif type(x) is list:
                 conv1 = x[0] # The kernel tuple
                 conv2 = x[1] # The kernel tuple
@@ -118,8 +134,8 @@ class Yolov1(nn.Module):
         return nn.Sequential(
             nn.Flatten(),
             nn.Linear(self.feature_size, 4096),
-            nn.Dropout(0.0),
-            nn.LeakyReLU(negative_slope=0.1),
+            nn.Dropout(0.25),
+            nn.SiLU(implace=False),
             nn.Linear(4096, s * s * (c + b * 5)),
         )
 
