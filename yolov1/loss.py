@@ -1,7 +1,7 @@
 
 import torch
 import torch.nn as nn
-from torchmetrics.functional.detection import intersection_over_union
+from utils import intersection_over_union
 
 
 
