@@ -101,7 +101,7 @@ class Yolov1(nn.Module):
                     ]
                 if x == "AdMaxPool":
                     layers += [
-                        nn.AdaptiveAvgPool2d(kernel_size=1, stride=1)
+                        nn.AdaptiveAvgPool2d(1)
                     ]
             elif type(x) is list:
                 conv1 = x[0] # The kernel tuple
@@ -135,7 +135,7 @@ class Yolov1(nn.Module):
             nn.Flatten(),
             nn.Linear(self.feature_size, 4096),
             nn.Dropout(0.25),
-            nn.SiLU(implace=False),
+            nn.SiLU(inplace=False),
             nn.Linear(4096, s * s * (c + b * 5)),
         )
 
